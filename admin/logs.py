@@ -1,5 +1,6 @@
 import copy
 import datetime
+import logging
 from functools import partial
 
 from pywebio import config
@@ -7,7 +8,7 @@ from pywebio.output import put_text, use_scope, put_table, put_button, popup
 from pywebio.session import set_env
 
 from admin.header import navbar
-from mongodb_utils import search_log, search_last_logs
+from mongodb_utils import search_last_logs
 
 
 @config(title="日志")
@@ -36,14 +37,14 @@ def get_all_logs():
         time = ""
         if log.get('time'):
             time = log['time']
-        timestamp = ""
-        if log.get('timestamp'):
-            timestamp = log['timestamp']
-            # try:
-            #     dt = datetime.datetime.fromtimestamp(timestamp)
-            #     timestamp = dt.strftime('%Y-%m-%d %H:%M:%S.%f')
-            # except Exception as e:
-            #     pass
+        create_at = ""
+        if log.get('create_at'):
+            create_at = log['create_at']
+            try:
+                dt = datetime.datetime.fromtimestamp(create_at)
+                create_at = dt.strftime('%Y-%m-%d %H:%M:%S.%f')
+            except Exception as e:
+                logging.error(f"时间转换错误: {e}")
 
         ip = ""
         if log.get('ip'):
@@ -54,10 +55,10 @@ def get_all_logs():
         del param['uuid']
         del param['ip']
         del param['time']
-        del param['timestamp']
+        del param['create_at']
 
         # 按钮弹窗显示log
         rows.append(
-            [log_type, param, uuid, ip, time, timestamp, put_button('查看详情', onclick=partial(show_detail, log))])
+            [log_type, param, uuid, ip, time, create_at, put_button('查看详情', onclick=partial(show_detail, log))])
     with use_scope('bag_items', clear=True):
-        put_table(rows, header=['log_type', 'param', 'uuid', 'ip', 'time', 'timestamp', 'detail'])
+        put_table(rows, header=['log_type', 'param', 'uuid', 'ip', 'time', 'create_at', 'detail'])
