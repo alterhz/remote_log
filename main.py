@@ -17,8 +17,6 @@ async def log_function(data: Dict[str, Any]):
     if 'log_type' not in data:
         return {"message": "JSON data must contain 'log_type' field."}
     logging.info(f"The 'log_type' value is: {data['log_type']}")
-    # 追加当前时间戳long
-    data['timestamp'] = datetime.datetime.now().timestamp()
     add_log(data)
     return {"message": "Logged successfully"}
 

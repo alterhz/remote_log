@@ -1,3 +1,4 @@
+import copy
 import datetime
 from functools import partial
 
@@ -27,6 +28,7 @@ def get_all_logs():
     logs = search_last_logs({}, 100)
     rows = []
     for log in logs:
+        log_type = log['log_type']
         # log['uuid']不存在返回""
         uuid = ""
         if log.get('uuid'):
@@ -46,18 +48,16 @@ def get_all_logs():
         ip = ""
         if log.get('ip'):
             ip = log['ip']
-        param = ""
-        log_type = log['log_type']
-        if log_type == 'search':
-            param = f"search_type_index: {log['search_type_index']}, search_text: {log['search_text']}"
-        elif log_type == 'change_dir':
-            param = f"path: {log['path']}"
-        elif log_type == 'add_new_path':
-            param = f"new_path: {log['new_path']}"
-        elif log_type == 'open_excel':
-            param = f"excel_name: {log['excel_name']}, sheet_name: {log['sheet_name']}"
+        param = copy.deepcopy(log)
+        del param['_id']
+        del param['log_type']
+        del param['uuid']
+        del param['ip']
+        del param['time']
+        del param['timestamp']
 
         # 按钮弹窗显示log
-        rows.append([log_type, param, uuid, ip, time, timestamp, put_button('查看详情', onclick=partial(show_detail, log))])
+        rows.append(
+            [log_type, param, uuid, ip, time, timestamp, put_button('查看详情', onclick=partial(show_detail, log))])
     with use_scope('bag_items', clear=True):
         put_table(rows, header=['log_type', 'param', 'uuid', 'ip', 'time', 'timestamp', 'detail'])
