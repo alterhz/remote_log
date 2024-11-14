@@ -5,7 +5,12 @@
 # 启动fastapi
 ```shell
 # 控制台启动
-uvicorn main:app --reload --port 8080
+python main.py
+```
+
+# 启动后台
+```shell
+
 ```
 
 
