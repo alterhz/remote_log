@@ -8,6 +8,6 @@ def get_app_db_by_localstorage():
     if app_name == '页签搜索大师':
         return 'excel_sheet_master'
     elif app_name == 'Excel合并工具':
-        return 'excel_merge'
+        return 'merge_editor'
     else:
         return 'unknown'
