@@ -1,9 +1,7 @@
-from datetime import datetime
 import logging
+from datetime import datetime
 
 import pymongo
-from pywebio.output import use_scope, put_table
-from pywebio_battery import get_localstorage
 
 client = pymongo.MongoClient("mongodb://10.4.4.123:27017/")
 print(f"Connected to MongoDB!{client}")
