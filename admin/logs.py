@@ -10,7 +10,7 @@ from pywebio.pin import put_input, pin
 from pywebio.session import set_env
 
 from admin.header import navbar
-from admin.statis import statis
+from common import web_utils
 from mongodb_utils import search_last_logs
 
 
@@ -31,7 +31,8 @@ def query_logs():
     except Exception as e:
         filter_json = {}
         logging.error(f"json: {pin.filter}, 解析错误: {e}")
-    get_all_logs(filter_json)
+    app_db = web_utils.get_app_db_by_localstorage()
+    get_all_logs(app_db, "action_log", filter_json)
 
 
 def show_detail(log):
@@ -40,8 +41,8 @@ def show_detail(log):
     ])
 
 
-def get_all_logs(filter_json):
-    logs = search_last_logs(filter_json, 100)
+def get_all_logs(db, collection_name, filter_json):
+    logs = search_last_logs(db, collection_name, filter_json, 100)
     rows = []
     for log in logs:
         log_type = log['log_type']
