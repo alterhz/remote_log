@@ -10,7 +10,11 @@ python main.py
 
 # 启动后台
 ```shell
-
+# 123
+sudo su -
+conda activate web
+cd /root/py_pro/remote_log
+bash start.sh
 ```
 
 
@@ -33,3 +37,4 @@ docker volume ls
 # 运行mongo
 docker run -d -p 27017:27017 --name my-mongo -v mongo-data:/data/db mongo
 ```
+

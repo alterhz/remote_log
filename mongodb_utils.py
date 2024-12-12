@@ -1,5 +1,5 @@
 import logging
-from datetime import datetime
+from datetime import datetime, timedelta
 
 import pymongo
 
@@ -58,6 +58,69 @@ def get_today_user_count(db, collection_name):
                                 {"create_at": {"$gte": today_start.timestamp(), "$lte": today_end.timestamp()}})
 
     return len(uuids)
+
+
+def get_week_user_count(db, collection_name):
+    """
+    获取本周的用户量
+    :param db:   数据库名称
+    :param collection_name: 集合名称
+    :return: 本周的用户量
+    """
+    mydb = client[db]
+    action_log = mydb[collection_name]
+    # 获取本周的起始时间和结束时间
+    today = datetime.today()
+    start_of_week = today - timedelta(days=today.weekday())
+    end_of_week = start_of_week + timedelta(days=6)
+    # 查询本周内有操作记录的不同uuid数量，即本周的用户量
+    uuids = action_log.distinct("uuid",
+                                {"create_at": {"$gte": start_of_week.timestamp(), "$lte": end_of_week.timestamp()}})
+    return len(uuids)
+
+
+def get_month_user_count(db, collection_name):
+    """
+    获取本月用户量
+    :param db: 数据库名称
+    :param collection_name: 集合名称
+    :return: 本月用户量
+    """
+    mydb = client[db]
+    action_log = mydb[collection_name]
+    # 获取本月的起始时间和结束时间
+    today = datetime.today()
+    # 考虑跨年的情况
+    if today.month == 1:
+        last_month_start = datetime(today.year - 1, 12, 1)
+    else:
+        last_month_start = datetime(today.year, today.month - 1, 1)
+
+    last_month_end = datetime(today.year, today.month, 1) - timedelta(seconds=1)
+    # 查询本月内有操作记录的不同uuid数量，即本月的用户量
+    uuids = action_log.distinct("uuid",
+                                {"create_at": {"$gte": last_month_start.timestamp(), "$lte": last_month_end.timestamp()}})
+    return len(uuids)
+
+
+def get_day_user_count(db, collection_name, date):
+    """
+    获取指定日期的用户量
+    :param db: 数据库名称
+    :param collection_name: 集合名称
+    :param date: 日期
+    :return: 指定日期的用户量
+    """
+    mydb = client[db]
+    action_log = mydb[collection_name]
+    # 获取指定日期的起始时间和结束时间
+    start_of_day = datetime.combine(date, datetime.min.time())
+    end_of_day = datetime.combine(date, datetime.max.time())
+    # 查询指定日期内有操作记录的不同uuid数量，即指定日期的用户量
+    uuids = action_log.distinct("uuid",
+                                {"create_at": {"$gte": start_of_day.timestamp(), "$lte": end_of_day.timestamp()}})
+    return len(uuids)
+
 
 
 def get_log_types(db, collection_name):

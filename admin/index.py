@@ -3,7 +3,7 @@ from functools import partial
 from pywebio import config
 from pywebio.output import put_text, put_row, put_button, toast
 from pywebio.pin import put_select, pin
-from pywebio.session import set_env
+from pywebio.session import set_env, run_js
 from pywebio_battery import get_localstorage, set_localstorage
 
 from admin.header import navbar
@@ -28,3 +28,5 @@ def main():
 def switch_app():
     set_localstorage('app_name', pin.app_name)
     toast(f'已切换到{pin.app_name}')
+    # 延迟2秒刷新页面
+    run_js("setTimeout(() => window.location.reload(), 2000);")
